@@ -239,7 +239,7 @@ else
     echo -e "  ${GREEN}✓${RESET} Claude Code CLI"
 
     echo -e "  ${DIM}Installing LiteLLM...${RESET}"
-    $PYTHON -m pip install 'litellm[proxy]' --quiet 2>&1 | tail -1
+    $PYTHON -m pip install 'litellm[proxy]==1.82.6' --quiet 2>&1 | tail -1
     echo -e "  ${GREEN}✓${RESET} LiteLLM"
 
     mkdir -p "$NEMO_DIR/workspace/memory"
