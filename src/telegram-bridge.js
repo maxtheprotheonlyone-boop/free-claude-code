@@ -206,4 +206,15 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+// Prevent unhandled errors from crashing the process
+process.on('uncaughtException', (err) => {
+  console.error(`Uncaught exception: ${err.message}`);
+});
+process.on('unhandledRejection', (err) => {
+  console.error(`Unhandled rejection: ${err}`);
+});
+
+main().catch(err => {
+  console.error(`Main error: ${err.message}`);
+  process.exit(1);
+});

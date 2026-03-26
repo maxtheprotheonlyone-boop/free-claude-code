@@ -2,7 +2,7 @@
 # Nemo Code — ClawdWorks sandboxed AI agent
 # Wraps Claude Code CLI with NVIDIA free models via LiteLLM proxy
 
-set -e
+# Don't use set -e — proxy startup can fail transiently and we need graceful handling
 
 # Available models on NVIDIA NIM free tier
 MODELS=(
@@ -20,7 +20,12 @@ start_proxy() {
     echo "ERROR: NVIDIA_API_KEY not set. Get one free at https://build.nvidia.com"
     exit 1
   fi
-  source nemo-proxy > /dev/null 2>&1
+  source nemo-proxy
+  if ! curl -s http://127.0.0.1:4000/health > /dev/null 2>&1; then
+    echo "ERROR: Proxy failed to start. Retrying..."
+    sleep 5
+    source nemo-proxy
+  fi
   # CC CLI will talk to LiteLLM which translates to NVIDIA
   export ANTHROPIC_BASE_URL="http://127.0.0.1:4000"
   export ANTHROPIC_API_KEY="nemo-code-local"

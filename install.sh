@@ -206,7 +206,7 @@ if [ -z "\$TELEGRAM_BOT_TOKEN" ]; then
     exit 1
 fi
 docker stop nemo-tg 2>/dev/null; docker rm nemo-tg 2>/dev/null
-exec docker run -d --name nemo-tg --restart unless-stopped \
+exec docker run -it --name nemo-tg \
     --dns 8.8.8.8 --dns 8.8.4.4 \
     -e NVIDIA_API_KEY="${NVIDIA_API_KEY}" \
     -e NEMO_MODEL="${NEMO_MODEL}" \
