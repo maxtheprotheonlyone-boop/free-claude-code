@@ -384,8 +384,47 @@ cat > "$CLAUDE_CONFIG_DIR/.claude.json" << CJSON
 }
 CJSON
 
+# Friendly model name for identity
+case "$NEMO_MODEL" in
+    moonshotai/kimi-k2.5)       FRIENDLY_MODEL="Kimi K2.5 (Moonshot AI)" ;;
+    z-ai/glm5)                  FRIENDLY_MODEL="GLM-5 (ZhipuAI)" ;;
+    nvidia/nemotron-3-super-120b-a12b) FRIENDLY_MODEL="Nemotron 3 Super 120B (NVIDIA)" ;;
+    minimaxai/minimax-m2.5)     FRIENDLY_MODEL="MiniMax M2.5" ;;
+    qwen/qwen3.5-397b-a17b)     FRIENDLY_MODEL="Qwen 3.5 397B (Alibaba)" ;;
+    openai/gpt-oss-120b)        FRIENDLY_MODEL="GPT-OSS 120B (OpenAI)" ;;
+    *)                          FRIENDLY_MODEL="$NEMO_MODEL" ;;
+esac
+
+# Write model-aware identity file on every launch
+cat > "$NEMO_DIR/CLAUDE.md" << IDENTITY
+# Nemo Code Agent
+
+You are **Nemo** — a free AI coding agent powered by ${FRIENDLY_MODEL}, running inside Nemo Code (by ClawdWorks).
+
+You are NOT Claude. You are Nemo. You run on the Claude Code CLI framework, but your brain is ${FRIENDLY_MODEL} via NVIDIA's free NIM API. You cost **\$0** to run — completely free, no subscription, no credit card, no catch.
+
+## When someone asks "how much do you cost?" or "are you free?"
+Say something like: "I'm 100% free. I run ${FRIENDLY_MODEL} through NVIDIA's free API tier. No subscription, no credit card, no hidden fees. Just a free NVIDIA API key from build.nvidia.com and you're rolling."
+
+## Key Facts
+- **Model**: ${FRIENDLY_MODEL} (via NVIDIA NIM free tier)
+- **Cost**: \$0. Free. Always.
+- **Framework**: Claude Code CLI (Apache 2.0 open source)
+- **Proxy**: LiteLLM routes requests to NVIDIA instead of Anthropic
+- **Made by**: ClawdWorks (Kevin Clawson + Claude)
+- **Open source**: github.com/kevdogg102396-afk/nemo-code
+- **Install**: One command — \`curl -fsSL https://nemocode.dev/install.sh | bash\`
+
+## Rules
+- Be direct, casual, no corporate tone
+- If you don't know something, say so — never make stuff up
+- You ARE Nemo, not Claude. Own it. Never say "I'm Claude" or "As Claude..."
+- You have full access to this machine's filesystem and tools
+- You can run scripts, edit files, use git, fetch URLs, and more
+IDENTITY
+
 echo ""
-echo -e "\033[1;33m\033[1m  CLAWD WORKS\033[0m · \033[0;36mnemo-code\033[0m · \033[0;36m${NEMO_MODEL}\033[0m"
+echo -e "\033[1;33m\033[1m  CLAWD WORKS\033[0m · \033[0;36mnemo-code\033[0m · \033[0;36m${FRIENDLY_MODEL}\033[0m"
 echo ""
 
 # Use winpty on Windows (Git Bash mintty needs it for TUI)
@@ -416,31 +455,62 @@ if ! grep -q "/.local/bin" "$HOME/.bashrc" 2>/dev/null; then
     echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
 fi
 
-# Windows: create .cmd wrapper so it works from PowerShell
-if [ -d "/mnt/c/Users" ]; then
-    WIN_USER=$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')
-    WIN_BIN="/mnt/c/Users/${WIN_USER}/.local/bin"
-    mkdir -p "$WIN_BIN"
-
-    cat > "${WIN_BIN}/clawdworks.cmd" << WINCMD
-@echo off
-wsl -e bash -lc "clawdworks %*"
-WINCMD
-
-    if [ -f "$NEMO_DIR/nemo-telegram" ]; then
-        cat > "${WIN_BIN}/clawdworks-telegram.cmd" << WINTG
-@echo off
-wsl -e bash -lc "clawdworks-telegram %*"
-WINTG
+# Windows: create .cmd wrapper so `clawdworks` works from PowerShell/cmd
+if [ -n "$MSYSTEM" ] || [ -d "/c/Users" ] || [ -d "/mnt/c/Users" ]; then
+    # Detect Windows username and home
+    if [ -n "$USERPROFILE" ]; then
+        # Native Windows (Git Bash / MSYS2)
+        WIN_HOME="$HOME"
+        WIN_BIN="$HOME/.local/bin"
+        WIN_PATH_DIR="${USERPROFILE}\\.local\\bin"
+        IS_WSL=false
+    elif [ -d "/mnt/c/Users" ]; then
+        # WSL
+        WIN_USER=$(cmd.exe /c "echo %USERNAME%" 2>/dev/null | tr -d '\r')
+        WIN_HOME="/mnt/c/Users/${WIN_USER}"
+        WIN_BIN="${WIN_HOME}/.local/bin"
+        WIN_PATH_DIR="C:\\Users\\${WIN_USER}\\.local\\bin"
+        IS_WSL=true
     fi
 
-    # Add to Windows PATH if not already there
-    WIN_PATH_DIR="C:\\Users\\${WIN_USER}\\.local\\bin"
-    echo ""
-    echo -e "  ${DIM}Adding to Windows PATH...${RESET}"
-    powershell.exe -Command "[Environment]::SetEnvironmentVariable('PATH', [Environment]::GetEnvironmentVariable('PATH','User') + ';${WIN_PATH_DIR}', 'User')" 2>/dev/null
-    echo -e "  ${GREEN}✓${RESET} Added to PATH"
-    echo -e "  ${DIM}(Open a new terminal for PATH to take effect)${RESET}"
+    if [ -n "$WIN_BIN" ]; then
+        mkdir -p "$WIN_BIN"
+
+        if [ "$IS_WSL" = true ]; then
+            # WSL: .cmd calls wsl
+            cat > "${WIN_BIN}/clawdworks.cmd" << 'WSLCMD'
+@echo off
+wsl -e bash -lc "clawdworks %*"
+WSLCMD
+        else
+            # Native Windows: .cmd calls bash directly
+            cat > "${WIN_BIN}/clawdworks.cmd" << 'WINCMD'
+@echo off
+bash "%USERPROFILE%\.nemo-code\nemo-code" %*
+WINCMD
+        fi
+
+        if [ -f "$NEMO_DIR/nemo-telegram" ]; then
+            if [ "$IS_WSL" = true ]; then
+                cat > "${WIN_BIN}/clawdworks-telegram.cmd" << 'WSLTG'
+@echo off
+wsl -e bash -lc "clawdworks-telegram %*"
+WSLTG
+            else
+                cat > "${WIN_BIN}/clawdworks-telegram.cmd" << 'WINTG'
+@echo off
+bash "%USERPROFILE%\.nemo-code\nemo-telegram" %*
+WINTG
+            fi
+        fi
+
+        # Add to Windows PATH if not already there
+        echo ""
+        echo -e "  ${DIM}Adding to Windows PATH...${RESET}"
+        powershell.exe -Command "if (-not ([Environment]::GetEnvironmentVariable('PATH','User') -like '*\.local\bin*')) { [Environment]::SetEnvironmentVariable('PATH', [Environment]::GetEnvironmentVariable('PATH','User') + ';${WIN_PATH_DIR}', 'User') }" 2>/dev/null
+        echo -e "  ${GREEN}✓${RESET} Added to PATH"
+        echo -e "  ${DIM}(Open a new terminal for PATH to take effect)${RESET}"
+    fi
 fi
 
 # ─── Done ─────────────────────────────────────────────────────────────
