@@ -348,7 +348,7 @@ if [ -z "$LITELLM_CMD" ]; then
     exit 1
 fi
 
-"$LITELLM_CMD" --config /tmp/nemo-litellm.yaml --port 4000 --host 127.0.0.1 > /tmp/nemo-litellm.log 2>&1 &
+PYTHONIOENCODING=utf-8 PYTHONUTF8=1 "$LITELLM_CMD" --config /tmp/nemo-litellm.yaml --port 4000 --host 127.0.0.1 > /tmp/nemo-litellm.log 2>&1 &
 PROXY_PID=$!
 trap "kill $PROXY_PID 2>/dev/null" EXIT
 
