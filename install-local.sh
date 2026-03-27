@@ -170,12 +170,12 @@ case "$ACTION" in
       fi
     done
     echo ""
-    echo "Switch with: NEMO_MODEL=<model-id> nemo-code"
+    echo "Switch with: NEMO_MODEL=<model-id> clawdworks"
     ;;
   help|--help|-h)
     echo "Nemo Code by ClawdWorks"
     echo ""
-    echo "Usage: nemo-code [command]"
+    echo "Usage: clawdworks [command]  (or: nemo-code [command])"
     echo ""
     echo "  chat       Interactive chat (default)"
     echo "  run        Headless — run a prompt and exit"
@@ -188,7 +188,7 @@ case "$ACTION" in
     echo "  NEMO_MAX_TOKENS   Max tokens (default: 16384)"
     ;;
   *)
-    echo "Unknown: $ACTION — run 'nemo-code help'"
+    echo "Unknown: $ACTION — run 'clawdworks help'"
     exit 1
     ;;
 esac
@@ -222,6 +222,12 @@ CLAUDEMD
 LINK_DIR="$HOME/.local/bin"
 mkdir -p "$LINK_DIR"
 ln -sf "$NEMO_DIR/nemo-code" "$LINK_DIR/nemo-code"
+ln -sf "$NEMO_DIR/nemo-code" "$LINK_DIR/clawdworks"
+
+# Add ~/.local/bin to PATH if not already there
+if ! grep -q "/.local/bin" "$HOME/.bashrc" 2>/dev/null; then
+    echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+fi
 
 echo ""
 echo -e "${GREEN}${BOLD}Nemo Code installed!${RESET}"
@@ -229,7 +235,8 @@ echo ""
 echo -e "  ${WHITE}Next steps:${RESET}"
 echo -e "  1. Get a free NVIDIA API key: ${CYAN}https://build.nvidia.com${RESET}"
 echo -e "  2. Export it: ${CYAN}export NVIDIA_API_KEY='your-key'${RESET}"
-echo -e "  3. Run: ${CYAN}nemo-code${RESET}"
+echo -e "  3. Reload shell: ${CYAN}source ~/.bashrc${RESET}"
+echo -e "  4. Run: ${CYAN}clawdworks${RESET}  (or ${CYAN}nemo-code${RESET})"
 echo ""
 echo -e "  Add to your shell profile for persistence:"
 echo -e "  ${DIM}echo 'export NVIDIA_API_KEY=\"your-key\"' >> ~/.bashrc${RESET}"

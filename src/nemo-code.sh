@@ -74,7 +74,7 @@ case "$ACTION" in
       fi
     done
     echo ""
-    echo "Switch with: NEMO_MODEL=<model-id> nemo-code"
+    echo "Switch with: NEMO_MODEL=<model-id> clawdworks"
     ;;
 
   telegram)
@@ -86,7 +86,7 @@ case "$ACTION" in
   help|--help|-h)
     echo "Nemo Code by ClawdWorks"
     echo ""
-    echo "Usage: nemo-code [command] [options]"
+    echo "Usage: clawdworks [command] [options]  (or: nemo-code [command])"
     echo ""
     echo "Commands:"
     echo "  chat       Interactive chat (default)"
@@ -101,15 +101,15 @@ case "$ACTION" in
     echo "  NEMO_MAX_TOKENS   Max output tokens (default: 16384)"
     echo ""
     echo "Examples:"
-    echo "  nemo-code                          # Start chatting"
-    echo "  nemo-code run 'explain this code'  # One-shot prompt"
-    echo "  nemo-code telegram                 # Telegram bridge"
-    echo "  NEMO_MODEL=z-ai/glm5 nemo-code    # Use GLM-5"
+    echo "  clawdworks                          # Start chatting"
+    echo "  clawdworks run 'explain this code'  # One-shot prompt"
+    echo "  clawdworks telegram                 # Telegram bridge"
+    echo "  NEMO_MODEL=z-ai/glm5 clawdworks    # Use GLM-5"
     ;;
 
   *)
     echo "Unknown command: $ACTION"
-    echo "Run 'nemo-code help' for usage"
+    echo "Run 'clawdworks help' for usage"
     exit 1
     ;;
 esac
