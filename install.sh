@@ -300,17 +300,45 @@ model_list:
       max_tokens: ${NEMO_MAX_TOKENS}
 YAML
 
+# Kill any existing LiteLLM on our port
+lsof -ti:4000 2>/dev/null | xargs kill 2>/dev/null
+sleep 1
+
 litellm --config /tmp/nemo-litellm.yaml --port 4000 --host 127.0.0.1 > /tmp/nemo-litellm.log 2>&1 &
 PROXY_PID=$!
 trap "kill $PROXY_PID 2>/dev/null" EXIT
 
+# Wait for proxy to be ready
+PROXY_READY=false
 for i in $(seq 1 30); do
-    curl -s http://127.0.0.1:4000/health > /dev/null 2>&1 && break
+    if curl -s http://127.0.0.1:4000/health > /dev/null 2>&1; then
+        PROXY_READY=true
+        break
+    fi
     sleep 1
 done
 
+if [ "$PROXY_READY" = false ]; then
+    echo "LiteLLM proxy failed to start. Check /tmp/nemo-litellm.log"
+    exit 1
+fi
+
 export ANTHROPIC_BASE_URL="http://127.0.0.1:4000"
 export ANTHROPIC_API_KEY="nemo-code-local"
+
+# Use separate config dir so Nemo doesn't conflict with existing Claude Code
+export CLAUDE_CONFIG_DIR="$NEMO_DIR/.claude-config"
+mkdir -p "$CLAUDE_CONFIG_DIR"
+
+# Pre-bake onboarding so CC doesn't ask setup questions
+cat > "$CLAUDE_CONFIG_DIR/.claude.json" << CJSON
+{
+  "hasCompletedOnboarding": true,
+  "theme": "dark",
+  "customApiKeyResponses": { "approved": true },
+  "bypassPermissionsModeAccepted": true
+}
+CJSON
 
 clear
 echo -e "\033[0;34m     .    *       .          *        .       *\033[0m"
