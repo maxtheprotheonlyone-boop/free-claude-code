@@ -5,6 +5,16 @@ $NemoDir = "$env:USERPROFILE\.nemo-code"
 $EnvFile = "$NemoDir\.env"
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
+# Model registry
+$Models = @(
+    @{ id = "moonshotai/kimi-k2.5";                name = "Kimi K2.5 (Moonshot AI)";          desc = "top coding model" }
+    @{ id = "z-ai/glm5";                           name = "GLM-5 (ZhipuAI)";                  desc = "strong all-rounder" }
+    @{ id = "nvidia/nemotron-3-super-120b-a12b";   name = "Nemotron 3 Super 120B (NVIDIA)";    desc = "120B params" }
+    @{ id = "minimaxai/minimax-m2.5";              name = "MiniMax M2.5";                      desc = "fast responses" }
+    @{ id = "qwen/qwen3.5-397b-a17b";              name = "Qwen 3.5 397B (Alibaba)";           desc = "massive MoE" }
+    @{ id = "openai/gpt-oss-120b";                 name = "GPT-OSS 120B (OpenAI)";             desc = "open-source" }
+)
+
 # Load .env
 if (Test-Path $EnvFile) {
     Get-Content $EnvFile | ForEach-Object {
@@ -13,6 +23,64 @@ if (Test-Path $EnvFile) {
         }
     }
 }
+
+# Handle subcommands
+$firstArg = if ($args.Count -gt 0) { $args[0] } else { "" }
+
+if ($firstArg -eq "models") {
+    Write-Host ""
+    Write-Host "  Available NVIDIA NIM models (free tier):" -ForegroundColor White
+    Write-Host ""
+    $currentModel = if ($env:NEMO_MODEL) { $env:NEMO_MODEL } else { "moonshotai/kimi-k2.5" }
+    for ($i = 0; $i -lt $Models.Count; $i++) {
+        $m = $Models[$i]
+        $num = $i + 1
+        if ($m.id -eq $currentModel) {
+            Write-Host "  * $num) $($m.name)" -ForegroundColor Green -NoNewline
+            Write-Host "  (active)" -ForegroundColor Green
+        } else {
+            Write-Host "    $num) $($m.name)" -NoNewline
+            Write-Host "  - $($m.desc)" -ForegroundColor DarkGray
+        }
+    }
+    Write-Host ""
+    $pick = Read-Host "  Switch to [enter to keep current]"
+    if ($pick -and $pick -match '^\d+$') {
+        $idx = [int]$pick - 1
+        if ($idx -ge 0 -and $idx -lt $Models.Count) {
+            $newModel = $Models[$idx].id
+            $envContent = "export NVIDIA_API_KEY=`"$env:NVIDIA_API_KEY`"`nexport NEMO_MODEL=`"$newModel`""
+            [IO.File]::WriteAllText($EnvFile, $envContent, $Utf8NoBom)
+            Write-Host "  Switched to: $($Models[$idx].name)" -ForegroundColor Green
+            Write-Host "  Run 'clawdworks' to start with the new model." -ForegroundColor DarkGray
+        } else {
+            Write-Host "  Invalid choice." -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  Keeping: $currentModel" -ForegroundColor DarkGray
+    }
+    Write-Host ""
+    exit 0
+}
+
+if ($firstArg -eq "help" -or $firstArg -eq "--help" -or $firstArg -eq "-h") {
+    Write-Host ""
+    Write-Host "  Nemo Code by ClawdWorks" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "  Usage: clawdworks [command]"
+    Write-Host ""
+    Write-Host "    (no args)    Interactive chat (default)"
+    Write-Host "    models       List and switch NVIDIA models"
+    Write-Host "    help         Show this help"
+    Write-Host ""
+    Write-Host "  Environment:"
+    Write-Host "    NVIDIA_API_KEY    Your NVIDIA NIM key (required)"
+    Write-Host "    NEMO_MODEL        Model to use (saved in ~/.nemo-code/.env)"
+    Write-Host ""
+    exit 0
+}
+
+# ---- Main launcher (chat mode) ----
 
 if (-not $env:NVIDIA_API_KEY) {
     Write-Host "NVIDIA_API_KEY not set. Get one free at https://build.nvidia.com" -ForegroundColor Red
@@ -23,15 +91,8 @@ $NemoModel = if ($env:NEMO_MODEL) { $env:NEMO_MODEL } else { "moonshotai/kimi-k2
 $MaxTokens = if ($env:NEMO_MAX_TOKENS) { $env:NEMO_MAX_TOKENS } else { "16384" }
 
 # Friendly model name
-$FriendlyModel = switch ($NemoModel) {
-    "moonshotai/kimi-k2.5"                { "Kimi K2.5 (Moonshot AI)" }
-    "z-ai/glm5"                           { "GLM-5 (ZhipuAI)" }
-    "nvidia/nemotron-3-super-120b-a12b"   { "Nemotron 3 Super 120B (NVIDIA)" }
-    "minimaxai/minimax-m2.5"              { "MiniMax M2.5" }
-    "qwen/qwen3.5-397b-a17b"             { "Qwen 3.5 397B (Alibaba)" }
-    "openai/gpt-oss-120b"                 { "GPT-OSS 120B (OpenAI)" }
-    default                                { $NemoModel }
-}
+$FriendlyModel = ($Models | Where-Object { $_.id -eq $NemoModel } | Select-Object -First 1).name
+if (-not $FriendlyModel) { $FriendlyModel = $NemoModel }
 
 # Write LiteLLM config (no BOM)
 $yamlContent = @"
@@ -112,7 +173,7 @@ $env:ANTHROPIC_BASE_URL = "http://127.0.0.1:4000"
 $env:ANTHROPIC_API_KEY = "nemo-code-local"
 $env:CLAUDE_CONFIG_DIR = "$NemoDir\.claude-config"
 
-# Pre-bake onboarding (no BOM — claude parses this as JSON)
+# Pre-bake onboarding (no BOM)
 $configDir = "$NemoDir\.claude-config"
 if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
 $claudeJson = @'
@@ -152,7 +213,7 @@ Say something like: "I'm 100% free. I run $FriendlyModel through NVIDIA's free A
 "@
 [IO.File]::WriteAllText("$NemoDir\CLAUDE.md", $identity, $Utf8NoBom)
 
-# Branding (ASCII only — no unicode dots)
+# Branding
 Write-Host ""
 Write-Host "  CLAWD WORKS" -ForegroundColor Yellow -NoNewline
 Write-Host " | " -NoNewline
