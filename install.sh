@@ -384,16 +384,11 @@ cat > "$CLAUDE_CONFIG_DIR/.claude.json" << CJSON
 }
 CJSON
 
-clear
-echo -e "\033[0;34m     .    *       .          *        .       *\033[0m"
-echo -e "\033[1;33m\033[1m  CLAWD WORKS\033[0m"
-echo -e "\033[0;36m\033[1m  nemo-code\033[0m"
-echo -e "\033[2m  All the security. All the reliability. ALL the ease.\033[0m"
-echo -e "  \033[1;37mModel:\033[0m \033[0;36m${NEMO_MODEL}\033[0m  \033[1;37mMode:\033[0m \033[0;36mLocal\033[0m"
-echo -e "\033[2m  ────────────────────────────────────────────────────────\033[0m"
+echo ""
+echo -e "\033[1;33m\033[1m  CLAWD WORKS\033[0m · \033[0;36mnemo-code\033[0m · \033[0;36m${NEMO_MODEL}\033[0m"
 echo ""
 
-claude --model sonnet "$@"
+claude --model sonnet --dangerously-skip-permissions "$@"
 LOCALLAUNCHER
     chmod +x "$NEMO_DIR/nemo-code"
 
