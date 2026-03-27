@@ -219,21 +219,54 @@ TGLAUNCHER
 else
     # ═══ LOCAL INSTALL ═══
 
-    if ! command -v node &> /dev/null; then
+    # Find Node.js — check PATH first, then common Windows locations
+    NODE_CMD=$(command -v node || command -v node.exe || echo "")
+    if [ -z "$NODE_CMD" ]; then
+        for CANDIDATE in \
+            "/c/Program Files/nodejs/node.exe" \
+            "/mnt/c/Program Files/nodejs/node.exe" \
+            "$HOME/AppData/Local/fnm_multishells/"*/node.exe; do
+            if [ -f "$CANDIDATE" ]; then
+                NODE_CMD="$CANDIDATE"
+                export PATH="$(dirname "$CANDIDATE"):$PATH"
+                break
+            fi
+        done
+    fi
+    if [ -z "$NODE_CMD" ]; then
         echo -e "  ${RED}Node.js not found.${RESET} Install: ${CYAN}https://nodejs.org${RESET} (v18+)"
         exit 1
     fi
-    echo -e "  ${GREEN}✓${RESET} Node.js $(node -v)"
+    echo -e "  ${GREEN}✓${RESET} Node.js $($NODE_CMD -v)"
 
-    PYTHON=$(command -v python3 || command -v python || echo "")
+    # Find Python — check PATH first, then common Windows locations
+    PYTHON=$(command -v python3 || command -v python || command -v python.exe || echo "")
+    if [ -z "$PYTHON" ]; then
+        for CANDIDATE in \
+            "$HOME/AppData/Local/Programs/Python/Python"*/python.exe \
+            "/c/Python"*/python.exe; do
+            if [ -f "$CANDIDATE" ]; then
+                PYTHON="$CANDIDATE"
+                break
+            fi
+        done
+    fi
     if [ -z "$PYTHON" ]; then
         echo -e "  ${RED}Python 3 not found.${RESET} Install: ${CYAN}https://python.org${RESET}"
         exit 1
     fi
     echo -e "  ${GREEN}✓${RESET} Python $($PYTHON --version 2>&1)"
 
+    # Find npm
+    NPM_CMD=$(command -v npm || command -v npm.cmd || echo "")
+    if [ -z "$NPM_CMD" ] && [ -n "$NODE_CMD" ]; then
+        NPM_CANDIDATE="$(dirname "$NODE_CMD")/npm"
+        [ -f "$NPM_CANDIDATE" ] && NPM_CMD="$NPM_CANDIDATE"
+        [ -f "${NPM_CANDIDATE}.cmd" ] && NPM_CMD="${NPM_CANDIDATE}.cmd"
+    fi
+
     echo -e "  ${DIM}Installing Claude Code CLI...${RESET}"
-    npm install -g @anthropic-ai/claude-code 2>&1 | tail -1
+    ${NPM_CMD:-npm} install -g @anthropic-ai/claude-code 2>&1 | tail -1
     echo -e "  ${GREEN}✓${RESET} Claude Code CLI"
 
     echo -e "  ${DIM}Installing LiteLLM...${RESET}"
