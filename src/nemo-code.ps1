@@ -222,20 +222,16 @@ Write-Host " | " -NoNewline
 Write-Host $FriendlyModel -ForegroundColor Cyan
 Write-Host ""
 
-# Enable virtual terminal processing (required for claude TUI in PS 5.1)
-try {
-    $vt = Add-Type -MemberDefinition @'
-[DllImport("kernel32.dll")] public static extern bool SetConsoleMode(IntPtr h, uint m);
-[DllImport("kernel32.dll")] public static extern bool GetConsoleMode(IntPtr h, out uint m);
-[DllImport("kernel32.dll")] public static extern IntPtr GetStdHandle(int n);
-'@ -Name VT -Namespace Win -PassThru -ErrorAction SilentlyContinue
-    $h = $vt::GetStdHandle(-11)
-    $m = 0; $vt::GetConsoleMode($h, [ref]$m) | Out-Null
-    $vt::SetConsoleMode($h, $m -bor 4) | Out-Null
-} catch {}
+# CC's interactive TUI needs winpty on Windows (comes with Git for Windows)
+$winpty = "C:\Program Files\Git\usr\bin\winpty.exe"
 
-# Run claude — use cmd /c to get clean console handling
-& claude --model sonnet --dangerously-skip-permissions --system-prompt-file "$NemoDir\CLAUDE.md" @args
+if ((Test-Path $winpty) -and -not ($args -contains "--print")) {
+    # winpty gives claude a proper PTY for its TUI
+    & $winpty claude --model sonnet --dangerously-skip-permissions --system-prompt-file "$NemoDir\CLAUDE.md" @args
+} else {
+    # --print mode works without winpty, or winpty not installed
+    & claude --model sonnet --dangerously-skip-permissions --system-prompt-file "$NemoDir\CLAUDE.md" @args
+}
 
 # Kill proxy on exit if we started it
 if ($proxyProcess -and -not $proxyProcess.HasExited) {
