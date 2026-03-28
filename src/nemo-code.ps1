@@ -215,11 +215,21 @@ Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscri
 
 # Branding
 Write-Host ""
-Write-Host "  CLAWD WORKS" -ForegroundColor Yellow -NoNewline
-Write-Host " | " -NoNewline
-Write-Host "nemo-code" -ForegroundColor Cyan -NoNewline
-Write-Host " | " -NoNewline
-Write-Host "Kimi K2.5 | Qwen 3.5 | MiniMax M2.5" -ForegroundColor Cyan
+Write-Host "     .    *       .          *        .       *      ." -ForegroundColor Blue
+Write-Host "  *          .         *           .             *    " -ForegroundColor Blue
+Write-Host ""
+Write-Host "   CLAWD WORKS" -ForegroundColor Yellow
+Write-Host "   n e m o - c o d e" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "   Kimi K2.5 " -ForegroundColor White -NoNewline
+Write-Host "(sonnet)" -ForegroundColor DarkGray -NoNewline
+Write-Host " | Qwen 3.5 " -ForegroundColor White -NoNewline
+Write-Host "(opus)" -ForegroundColor DarkGray -NoNewline
+Write-Host " | MiniMax M2.5 " -ForegroundColor White -NoNewline
+Write-Host "(haiku)" -ForegroundColor DarkGray
+Write-Host "   /model to switch mid-session — all free via NVIDIA NIM" -ForegroundColor DarkGray
+Write-Host ""
+Write-Host "     .    *       .          *        .       *      ." -ForegroundColor Blue
 Write-Host ""
 
 # CC's interactive TUI needs winpty on Windows (comes with Git for Windows)

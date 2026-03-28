@@ -444,7 +444,16 @@ Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscri
 IDENTITY
 
 echo ""
-echo -e "\033[1;33m  CLAWD WORKS\033[0m | \033[0;36mnemo-code\033[0m | \033[0;36mKimi K2.5 | Qwen 3.5 | MiniMax M2.5\033[0m"
+echo -e "\033[0;34m     .    *       .          *        .       *      .\033[0m"
+echo -e "\033[0;34m  *          .         *           .             *    \033[0m"
+echo ""
+echo -e "\033[1;33m   CLAWD WORKS\033[0m"
+echo -e "\033[0;36m   n e m o - c o d e\033[0m"
+echo ""
+echo -e "\033[0;37m   Kimi K2.5 \033[0;90m(sonnet)\033[0;37m | Qwen 3.5 \033[0;90m(opus)\033[0;37m | MiniMax M2.5 \033[0;90m(haiku)\033[0m"
+echo -e "\033[0;90m   /model to switch mid-session — all free via NVIDIA NIM\033[0m"
+echo ""
+echo -e "\033[0;34m     .    *       .          *        .       *      .\033[0m"
 echo ""
 
 # Use winpty on Windows (Git Bash mintty needs it for TUI)
