@@ -21,7 +21,7 @@ start_proxy() {
     exit 1
   fi
   source nemo-proxy
-  if ! curl -s http://127.0.0.1:4000/health > /dev/null 2>&1; then
+  if ! curl -s --max-time 2 http://127.0.0.1:4000/health/readiness > /dev/null 2>&1; then
     echo "ERROR: Proxy failed to start. Retrying..."
     sleep 5
     source nemo-proxy
