@@ -202,7 +202,7 @@ Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscri
 
 ## Key Facts
 - **Cost**: $0. Free. Always. All models.
-- **Made by**: ClawdWorks (Kevin Clawson + Claude)
+- **Made by**: ClawdWorks (Kevin Cline + Claude)
 - **Open source**: github.com/kevdogg102396-afk/nemo-code
 - **Framework**: Claude Code CLI (Apache 2.0)
 
