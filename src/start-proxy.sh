@@ -12,17 +12,17 @@ litellm_settings:
 model_list:
   - model_name: claude-sonnet-4-6
     litellm_params:
-      model: nvidia_nim/${MODEL}
+      model: nvidia_nim/moonshotai/kimi-k2.5
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS:-16384}
   - model_name: claude-opus-4-6
     litellm_params:
-      model: nvidia_nim/${MODEL}
+      model: nvidia_nim/qwen/qwen3.5-397b-a17b
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS:-16384}
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: nvidia_nim/${MODEL}
+      model: nvidia_nim/minimaxai/minimax-m2.5
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS:-16384}
 YAML
