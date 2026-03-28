@@ -407,10 +407,9 @@ export ANTHROPIC_API_KEY="nemo-code-local"
 export CLAUDE_CONFIG_DIR="$NEMO_DIR/.claude-config"
 mkdir -p "$CLAUDE_CONFIG_DIR"
 
-# Pre-bake onboarding so CC doesn't ask setup questions
+# Pre-bake API key approval so CC doesn't ask for Anthropic key (we use LiteLLM)
 cat > "$CLAUDE_CONFIG_DIR/.claude.json" << CJSON
 {
-  "hasCompletedOnboarding": true,
   "theme": "dark",
   "customApiKeyResponses": { "approved": true }
 }

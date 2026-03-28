@@ -178,9 +178,8 @@ $configDir = "$NemoDir\.claude-config"
 if (-not (Test-Path $configDir)) { New-Item -ItemType Directory -Path $configDir -Force | Out-Null }
 $claudeJson = @'
 {
-  "hasCompletedOnboarding": true,
   "theme": "dark",
-  "customApiKeyResponses": { "approved": true },
+  "customApiKeyResponses": { "approved": true }
 }
 '@
 [IO.File]::WriteAllText("$configDir\.claude.json", $claudeJson, $Utf8NoBom)

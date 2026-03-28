@@ -157,7 +157,7 @@ $envContent = "export NVIDIA_API_KEY=`"$NvidiaKey`"`nexport NEMO_MODEL=`"$NemoMo
 [IO.File]::WriteAllText("$NemoDir\.env", $envContent, $Utf8NoBom)
 
 # Pre-bake onboarding
-$claudeJson = '{"hasCompletedOnboarding":true,"theme":"dark","customApiKeyResponses":{"approved":true}}'
+$claudeJson = '{"theme":"dark","customApiKeyResponses":{"approved":true}}'
 [IO.File]::WriteAllText("$NemoDir\.claude-config\.claude.json", $claudeJson, $Utf8NoBom)
 
 # Copy PowerShell launcher
@@ -225,7 +225,7 @@ export ANTHROPIC_BASE_URL="http://127.0.0.1:4000" ANTHROPIC_API_KEY="nemo-code-l
 export CLAUDE_CONFIG_DIR="$NEMO_DIR/.claude-config"
 mkdir -p "$CLAUDE_CONFIG_DIR"
 cat > "$CLAUDE_CONFIG_DIR/.claude.json" << 'CJSON'
-{"hasCompletedOnboarding":true,"theme":"dark","customApiKeyResponses":{"approved":true}}
+{"theme":"dark","customApiKeyResponses":{"approved":true}}
 CJSON
 cat > "$NEMO_DIR/CLAUDE.md" << 'IDENTITY'
 # Nemo Code Agent
