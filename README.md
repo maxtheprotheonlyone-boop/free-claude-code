@@ -11,9 +11,9 @@ Built on the [Claude Code CLI](https://github.com/anthropics/claude-code) (Apach
 curl -fsSL https://raw.githubusercontent.com/kevdogg102396-afk/nemo-code/master/install.sh | bash
 ```
 
-### Windows (PowerShell)
+### Windows (PowerShell — no bash needed)
 ```powershell
-curl.exe -fsSL https://raw.githubusercontent.com/kevdogg102396-afk/nemo-code/master/install.sh -o install.sh; bash install.sh
+irm https://raw.githubusercontent.com/kevdogg102396-afk/free-claude-code/master/install.ps1 | iex
 ```
 
 Then:
@@ -26,18 +26,17 @@ That's it.
 
 ---
 
-## Models (all free)
+## Models (all free — switch mid-session!)
 
-| Model | Provider | Best for |
-|-------|----------|----------|
-| **Kimi K2.5** | Moonshot AI | Coding, reasoning (recommended) |
-| GLM-5 | ZhipuAI | General purpose |
-| Nemotron 3 Super 120B | NVIDIA | Balanced |
-| MiniMax M2.5 | MiniMax | Fast responses |
-| Qwen 3.5 397B | Alibaba | Complex reasoning |
-| GPT-OSS 120B | OpenAI | General purpose |
+Nemo Code maps 3 NVIDIA models to Claude Code's model slots. Switch anytime with `/model` in the TUI:
 
-Switch models anytime: `NEMO_MODEL=z-ai/glm5 clawdworks`
+| `/model` slot | NVIDIA Model | Best for |
+|---------------|-------------|----------|
+| **Sonnet** (default) | Kimi K2.5 (Moonshot AI) | Top coding model |
+| **Opus** | Qwen 3.5 397B (Alibaba) | Biggest brain, complex reasoning |
+| **Haiku** | MiniMax M2.5 | Fastest responses |
+
+Just type `/model` during a session to switch between them — no restart needed. All three are free via NVIDIA NIM.
 
 ---
 
@@ -63,7 +62,7 @@ Runs directly on your machine. Full filesystem, browser automation, MCP servers.
 
 - **Interactive chat** — `clawdworks`
 - **Headless mode** — `clawdworks run "fix the bug in app.js"`
-- **Model switching** — `clawdworks models`
+- **Model switching** — `/model` in the TUI (switch mid-session!)
 - **Telegram bridge** — `TELEGRAM_BOT_TOKEN=xxx clawdworks-telegram`
 - **MCP servers** — fetch, memory, filesystem built in. Add your own.
 
