@@ -4,6 +4,18 @@
 
 # Don't use set -e — proxy startup can fail transiently and we need graceful handling
 
+# Install Claude Code CLI at runtime if not present
+# (not bundled in the Docker image — installed on first run)
+if ! command -v claude &> /dev/null; then
+  echo "Installing Claude Code CLI (first run only)..."
+  npm install -g @anthropic-ai/claude-code 2>/dev/null
+  if ! command -v claude &> /dev/null; then
+    echo "ERROR: Failed to install Claude Code CLI. Check your network connection."
+    exit 1
+  fi
+  echo "Claude Code CLI installed."
+fi
+
 # Available models on NVIDIA NIM free tier
 MODELS=(
   "moonshotai/kimi-k2.5"

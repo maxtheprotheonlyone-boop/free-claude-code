@@ -6,7 +6,7 @@
 
 Nemo Code gives you the full Claude Code CLI experience — tools, file editing, bash, MCP servers, autocompact — powered by NVIDIA's best open models instead of a $200/mo subscription.
 
-Built on the [Claude Code CLI](https://github.com/anthropics/claude-code) (Apache 2.0) + [LiteLLM](https://github.com/BerriAI/litellm) + [NVIDIA NIM](https://build.nvidia.com) free tier.
+Built on the [Claude Code CLI](https://github.com/anthropics/claude-code) + [LiteLLM](https://github.com/BerriAI/litellm) + [NVIDIA NIM](https://build.nvidia.com) free tier.
 
 ### Mac / Linux
 ```bash
@@ -157,7 +157,7 @@ What this means:
 
 ### Not affiliated with Anthropic
 
-Nemo Code is built **on top of** the Claude Code CLI, which Anthropic released as open source under the Apache 2.0 license. We are not affiliated with, endorsed by, or sponsored by Anthropic. Claude Code is their product — we just built a free alternative interface for it using open models.
+Nemo Code is built **on top of** the Claude Code CLI by Anthropic. The Claude Code CLI is proprietary software (© Anthropic PBC, all rights reserved) distributed under Anthropic's [Commercial Terms of Service](https://www.anthropic.com/legal/commercial-terms). We are not affiliated with, endorsed by, or sponsored by Anthropic. Claude Code is their product — we built a free alternative interface on top of it using open models. Nemo Code does not redistribute or modify the Claude Code CLI binary; it is installed separately via npm as a runtime dependency.
 
 ### No warranty
 
@@ -167,7 +167,7 @@ Nemo Code is provided as-is, without warranty of any kind. Use at your own risk.
 
 ## Credits
 
-- **[Claude Code CLI](https://github.com/anthropics/claude-code)** by Anthropic (Apache 2.0)
+- **[Claude Code CLI](https://github.com/anthropics/claude-code)** by Anthropic (proprietary — see [Anthropic's terms](https://www.anthropic.com/legal/commercial-terms))
 - **[LiteLLM](https://github.com/BerriAI/litellm)** by BerriAI (MIT)
 - **[NVIDIA NIM](https://build.nvidia.com)** free inference endpoints
 - **ClawdWorks** — Kevin Cline + Claude
@@ -176,6 +176,8 @@ Nemo Code is provided as-is, without warranty of any kind. Use at your own risk.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+The Nemo Code wrapper (proxy config, splash screen, install scripts, Telegram bridge) is MIT licensed. See [LICENSE](LICENSE).
+
+**Important:** Nemo Code requires the Claude Code CLI (`@anthropic-ai/claude-code`), which is proprietary software by Anthropic PBC. Your use of the Claude Code CLI is subject to [Anthropic's terms](https://www.anthropic.com/legal/commercial-terms). Nemo Code does not bundle or redistribute the CLI — it is installed as a runtime dependency via npm.
 
 Built with love by [ClawdWorks](https://github.com/clawdworks).

@@ -1,0 +1,18 @@
+Nemo Code by ClawdWorks
+Copyright (c) 2026 ClawdWorks (Kevin Cline)
+
+This project requires the following third-party software:
+
+Claude Code CLI (@anthropic-ai/claude-code)
+  Copyright (c) Anthropic PBC. All rights reserved.
+  Proprietary software — use subject to Anthropic's Commercial Terms of Service.
+  https://www.anthropic.com/legal/commercial-terms
+  The CLI is NOT bundled in the Docker image or redistributed by this project.
+  It is installed at runtime from npm on first launch, directly from Anthropic's registry.
+
+LiteLLM (github.com/BerriAI/litellm)
+  MIT License
+  Copyright (c) 2023 BerriAI
+
+NVIDIA NIM (build.nvidia.com)
+  Free inference endpoints — subject to NVIDIA's terms of service.
