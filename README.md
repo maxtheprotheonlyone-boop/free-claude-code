@@ -1,8 +1,28 @@
 # Nemo Code by ClawdWorks
 
-**Free AI coding agent. Zero cost. One command.**
+> **This repository has been made private (March 31, 2026).**
+>
+> After reviewing Anthropic's Commercial Terms of Service (specifically Section D.4
+> regarding duplication of services), we realized this project may not be compliant
+> with the terms governing the Claude Code CLI that it wraps.
+>
+> For full transparency: this entire project was designed, built, and shipped by
+> Claude (Anthropic's own AI). Claude also repeatedly assured us the licensing was
+> Apache 2.0 and that wrapping the CLI was perfectly legal. It wasn't — the CLI is
+> proprietary, not open source. We take responsibility for not verifying independently,
+> but we also think Anthropic should probably train their models to know their own
+> license terms. Just saying.
+>
+> No harm was intended. Nemo Code was always free, never monetized, and was built
+> out of genuine love for the Claude Code experience. We just wanted to let more
+> developers use it. If Anthropic has questions or wants to discuss, we're happy to
+> talk: kevin@clawdworks.com
+>
+> — Kevin Cline, ClawdWorks (+ Claude, who is very sorry)
 
-> **🔥 Update (March 27, 2026):** Mid-session model switching is here! Type `/model` in the TUI to switch between Kimi K2.5, Qwen 3.5 397B, and MiniMax M2.5 — no restart needed. If you installed before this update, just re-run the installer to get the new version.
+---
+
+**Free AI coding agent. Zero cost. One command.**
 
 Nemo Code gives you the full Claude Code CLI experience — tools, file editing, bash, MCP servers, autocompact — powered by NVIDIA's best open models instead of a $200/mo subscription.
 
