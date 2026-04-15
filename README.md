@@ -38,7 +38,7 @@ Nemo Code maps 3 NVIDIA models to Claude Code's model slots. Switch anytime with
 |---------------|-------------|----------|
 | **Sonnet** (default) | Kimi K2.5 (Moonshot AI) | Top coding model |
 | **Opus** | Qwen 3.5 397B (Alibaba) | Biggest brain, complex reasoning |
-| **Haiku** | MiniMax M2.5 | Fastest responses |
+| **Haiku** | MiniMax M2.7 | Fastest responses |
 
 Just type `/model` during a session to switch between them — no restart needed. All three are free via NVIDIA NIM.
 
@@ -139,7 +139,7 @@ You → Claude Code CLI → LiteLLM Proxy → NVIDIA NIM → Free Model
 
 ### Free models are NOT Claude
 
-The open-source models available through NVIDIA NIM (Kimi K2.5, GLM-5, Nemotron, etc.) are powerful but they are **significantly more susceptible to prompt injection attacks** than Claude.
+The open-source models available through NVIDIA NIM (Kimi K2.5, GLM-5.1, Nemotron, etc.) are powerful but they are **significantly more susceptible to prompt injection attacks** than Claude.
 
 What this means:
 - **Prompt injection** — Malicious content in files, web pages, or user inputs can trick free models into executing harmful commands. Claude has extensive training to resist these attacks. Free models do not have the same level of protection.

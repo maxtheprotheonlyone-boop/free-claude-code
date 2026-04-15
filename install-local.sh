@@ -67,9 +67,9 @@ NEMO_MAX_TOKENS="${NEMO_MAX_TOKENS:-16384}"
 # Available models
 MODELS=(
   "moonshotai/kimi-k2.5"
-  "z-ai/glm5"
+  "z-ai/glm-5.1"
   "nvidia/nemotron-3-super-120b-a12b"
-  "minimaxai/minimax-m2.5"
+  "minimaxai/minimax-m2.7"
   "qwen/qwen3.5-397b-a17b"
   "openai/gpt-oss-120b"
 )

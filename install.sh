@@ -102,9 +102,9 @@ echo ""
 echo -e "  All models are ${GREEN}free${RESET} via NVIDIA NIM:"
 echo ""
 echo -e "    ${CYAN}1)${RESET} Kimi K2.5           ${DIM}— Moonshot AI, top coding model${RESET} ${GREEN}(recommended)${RESET}"
-echo -e "    ${CYAN}2)${RESET} GLM-5               ${DIM}— ZhipuAI, strong all-rounder${RESET}"
+echo -e "    ${CYAN}2)${RESET} GLM-5.1               ${DIM}— ZhipuAI, strong all-rounder${RESET}"
 echo -e "    ${CYAN}3)${RESET} Nemotron 3 Super     ${DIM}— NVIDIA, 120B params${RESET}"
-echo -e "    ${CYAN}4)${RESET} MiniMax M2.5         ${DIM}— MiniMax, fast responses${RESET}"
+echo -e "    ${CYAN}4)${RESET} MiniMax M2.7         ${DIM}— MiniMax, fast responses${RESET}"
 echo -e "    ${CYAN}5)${RESET} Qwen 3.5 397B        ${DIM}— Alibaba, massive MoE${RESET}"
 echo -e "    ${CYAN}6)${RESET} GPT-OSS 120B         ${DIM}— OpenAI open-source${RESET}"
 echo ""
@@ -113,9 +113,9 @@ read -r MODEL_CHOICE
 
 case "${MODEL_CHOICE:-1}" in
     1) NEMO_MODEL="moonshotai/kimi-k2.5" ;;
-    2) NEMO_MODEL="z-ai/glm5" ;;
+    2) NEMO_MODEL="z-ai/glm-5.1" ;;
     3) NEMO_MODEL="nvidia/nemotron-3-super-120b-a12b" ;;
-    4) NEMO_MODEL="minimaxai/minimax-m2.5" ;;
+    4) NEMO_MODEL="minimaxai/minimax-m2.7" ;;
     5) NEMO_MODEL="qwen/qwen3.5-397b-a17b" ;;
     6) NEMO_MODEL="openai/gpt-oss-120b" ;;
     *) NEMO_MODEL="moonshotai/kimi-k2.5" ;;
@@ -328,7 +328,7 @@ model_list:
       max_tokens: ${NEMO_MAX_TOKENS}
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: nvidia_nim/minimaxai/minimax-m2.5
+      model: nvidia_nim/minimaxai/minimax-m2.7
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS}
 YAML
@@ -424,12 +424,12 @@ You are NOT Claude. You are Nemo. You run on NVIDIA's free NIM API. You cost $0 
 ## Your Models (switch mid-session with /model)
 - **Sonnet** = Kimi K2.5 (Moonshot AI) — top coding model, default
 - **Opus** = Qwen 3.5 397B (Alibaba) — biggest brain, massive MoE
-- **Haiku** = MiniMax M2.5 — fastest responses
+- **Haiku** = MiniMax M2.7 — fastest responses
 
 All three are free via NVIDIA NIM. Users can type /model in the TUI to switch anytime.
 
 ## When asked "how much do you cost?" or "are you free?"
-Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscription, no credit card. Type /model to switch between Kimi K2.5, Qwen 3.5, and MiniMax M2.5."
+Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscription, no credit card. Type /model to switch between Kimi K2.5, Qwen 3.5, and MiniMax M2.7."
 
 ## Key Facts
 - **Cost**: $0. Free. Always. All models.
@@ -450,7 +450,7 @@ echo ""
 echo -e "\033[1;33m   CLAWD WORKS\033[0m"
 echo -e "\033[0;36m   n e m o - c o d e\033[0m"
 echo ""
-echo -e "\033[0;37m   Kimi K2.5 \033[0;90m(sonnet)\033[0;37m | Qwen 3.5 \033[0;90m(opus)\033[0;37m | MiniMax M2.5 \033[0;90m(haiku)\033[0m"
+echo -e "\033[0;37m   Kimi K2.5 \033[0;90m(sonnet)\033[0;37m | Qwen 3.5 \033[0;90m(opus)\033[0;37m | MiniMax M2.7 \033[0;90m(haiku)\033[0m"
 echo -e "\033[0;90m   /model to switch mid-session — all free via NVIDIA NIM\033[0m"
 echo ""
 echo -e "\033[0;34m     .    *       .          *        .       *      .\033[0m"

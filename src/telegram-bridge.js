@@ -19,7 +19,7 @@ const MAX_HISTORY = 20; // Keep last 20 exchanges for context
 const MODEL_MAP = {
   sonnet: { cc: 'sonnet', name: 'Kimi K2.5', provider: 'Moonshot AI' },
   opus:   { cc: 'opus',   name: 'Qwen 3.5 397B', provider: 'Alibaba' },
-  haiku:  { cc: 'haiku',  name: 'MiniMax M2.5', provider: 'MiniMax' },
+  haiku:  { cc: 'haiku',  name: 'MiniMax M2.7', provider: 'MiniMax' },
 };
 let currentModel = 'sonnet';
 

@@ -19,9 +19,9 @@ fi
 # Available models on NVIDIA NIM free tier
 MODELS=(
   "moonshotai/kimi-k2.5"
-  "z-ai/glm5"
+  "z-ai/glm-5.1"
   "nvidia/nemotron-3-super-120b-a12b"
-  "minimaxai/minimax-m2.5"
+  "minimaxai/minimax-m2.7"
   "qwen/qwen3.5-397b-a17b"
   "openai/gpt-oss-120b"
 )
@@ -116,7 +116,7 @@ case "$ACTION" in
     echo "  clawdworks                          # Start chatting"
     echo "  clawdworks run 'explain this code'  # One-shot prompt"
     echo "  clawdworks telegram                 # Telegram bridge"
-    echo "  NEMO_MODEL=z-ai/glm5 clawdworks    # Use GLM-5"
+    echo "  NEMO_MODEL=z-ai/glm-5.1 clawdworks    # Use GLM-5.1"
     ;;
 
   *)

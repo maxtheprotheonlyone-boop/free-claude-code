@@ -65,9 +65,9 @@ Write-Host ""
 Write-Host "  All models are " -NoNewline; Write-Host "free" -ForegroundColor Green -NoNewline; Write-Host " via NVIDIA NIM:"
 Write-Host ""
 Write-Host "    1) Kimi K2.5           - Moonshot AI, top coding model " -NoNewline; Write-Host "(recommended)" -ForegroundColor Green
-Write-Host "    2) GLM-5               - ZhipuAI, strong all-rounder"
+Write-Host "    2) GLM-5.1               - ZhipuAI, strong all-rounder"
 Write-Host "    3) Nemotron 3 Super     - NVIDIA, 120B params"
-Write-Host "    4) MiniMax M2.5         - MiniMax, fast responses"
+Write-Host "    4) MiniMax M2.7         - MiniMax, fast responses"
 Write-Host "    5) Qwen 3.5 397B        - Alibaba, massive MoE"
 Write-Host "    6) GPT-OSS 120B         - OpenAI open-source"
 Write-Host ""
@@ -76,9 +76,9 @@ if (-not $modelChoice) { $modelChoice = "1" }
 
 $NemoModel = switch ($modelChoice) {
     "1" { "moonshotai/kimi-k2.5" }
-    "2" { "z-ai/glm5" }
+    "2" { "z-ai/glm-5.1" }
     "3" { "nvidia/nemotron-3-super-120b-a12b" }
-    "4" { "minimaxai/minimax-m2.5" }
+    "4" { "minimaxai/minimax-m2.7" }
     "5" { "qwen/qwen3.5-397b-a17b" }
     "6" { "openai/gpt-oss-120b" }
     default { "moonshotai/kimi-k2.5" }
@@ -203,7 +203,7 @@ model_list:
       max_tokens: ${NEMO_MAX_TOKENS}
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: nvidia_nim/minimaxai/minimax-m2.5
+      model: nvidia_nim/minimaxai/minimax-m2.7
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS}
 YAML
@@ -235,12 +235,12 @@ You are NOT Claude. You are Nemo. You run on NVIDIA's free NIM API. You cost $0 
 ## Your Models (switch mid-session with /model)
 - **Sonnet** = Kimi K2.5 (Moonshot AI) — top coding model, default
 - **Opus** = Qwen 3.5 397B (Alibaba) — biggest brain, massive MoE
-- **Haiku** = MiniMax M2.5 — fastest responses
+- **Haiku** = MiniMax M2.7 — fastest responses
 
 All three are free via NVIDIA NIM. Users can type /model in the TUI to switch anytime.
 
 ## When asked "how much do you cost?" or "are you free?"
-Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscription, no credit card. Type /model to switch between Kimi K2.5, Qwen 3.5, and MiniMax M2.5."
+Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscription, no credit card. Type /model to switch between Kimi K2.5, Qwen 3.5, and MiniMax M2.7."
 
 ## Key Facts
 - **Cost**: $0. Free. Always. All models.
@@ -260,7 +260,7 @@ echo ""
 echo -e "\033[1;33m   CLAWD WORKS\033[0m"
 echo -e "\033[0;36m   n e m o - c o d e\033[0m"
 echo ""
-echo -e "\033[0;37m   Kimi K2.5 \033[0;90m(sonnet)\033[0;37m | Qwen 3.5 \033[0;90m(opus)\033[0;37m | MiniMax M2.5 \033[0;90m(haiku)\033[0m"
+echo -e "\033[0;37m   Kimi K2.5 \033[0;90m(sonnet)\033[0;37m | Qwen 3.5 \033[0;90m(opus)\033[0;37m | MiniMax M2.7 \033[0;90m(haiku)\033[0m"
 echo -e "\033[0;90m   /model to switch mid-session — all free via NVIDIA NIM\033[0m"
 echo ""
 echo -e "\033[0;34m     .    *       .          *        .       *      .\033[0m"

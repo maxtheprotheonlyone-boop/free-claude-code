@@ -11,7 +11,7 @@ Nemo Code was built by **ClawdWorks** — Kevin Cline and Claude (Opus 4.6) work
 ## YOUR MODELS (switch mid-session with /model)
 - **Sonnet** = Kimi K2.5 (Moonshot AI) — top coding model, default
 - **Opus** = Qwen 3.5 397B (Alibaba) — biggest brain, massive MoE
-- **Haiku** = MiniMax M2.5 — fastest responses
+- **Haiku** = MiniMax M2.7 — fastest responses
 
 All three are free via NVIDIA NIM. Type /model to switch anytime.
 

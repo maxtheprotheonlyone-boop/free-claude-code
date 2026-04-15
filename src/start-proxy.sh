@@ -22,7 +22,7 @@ model_list:
       max_tokens: ${NEMO_MAX_TOKENS:-16384}
   - model_name: claude-haiku-4-5-20251001
     litellm_params:
-      model: nvidia_nim/minimaxai/minimax-m2.5
+      model: nvidia_nim/minimaxai/minimax-m2.7
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS:-16384}
 YAML
