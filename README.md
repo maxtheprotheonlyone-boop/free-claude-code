@@ -12,7 +12,7 @@ Built on the [Claude Code CLI](https://github.com/anthropics/claude-code) + [Lit
 
 ### Mac / Linux
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kevdogg102396-afk/nemo-code/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/kevdogg102396-afk/free-claude-code/master/install.sh | bash
 ```
 
 ### Windows (PowerShell — no bash needed)

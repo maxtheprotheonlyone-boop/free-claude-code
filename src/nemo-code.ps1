@@ -115,7 +115,9 @@ model_list:
       api_key: $env:NVIDIA_API_KEY
       max_tokens: $MaxTokens
 "@
-$yamlPath = "$env:TEMP\nemo-litellm.yaml"
+# Write LiteLLM config into $NemoDir (ACL-restricted to the user profile)
+# rather than $env:TEMP which is world-readable on multi-user systems.
+$yamlPath = "$NemoDir\litellm.yaml"
 [IO.File]::WriteAllText($yamlPath, $yamlContent, $Utf8NoBom)
 
 # Check if proxy is already running
@@ -203,7 +205,7 @@ Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscri
 ## Key Facts
 - **Cost**: $0. Free. Always. All models.
 - **Made by**: ClawdWorks (Kevin Cline + Claude)
-- **Open source**: github.com/kevdogg102396-afk/nemo-code
+- **Open source**: github.com/kevdogg102396-afk/free-claude-code
 - **Framework**: Claude Code CLI (Apache 2.0)
 
 ## Rules

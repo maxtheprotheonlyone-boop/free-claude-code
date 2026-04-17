@@ -162,6 +162,15 @@ echo ""
 NEMO_DIR="$HOME/.nemo-code"
 mkdir -p "$NEMO_DIR"
 
+# Save credentials once, up front — both Docker and Local launchers source this.
+# umask ensures the file is created with owner-only read/write from the start.
+(umask 077 && cat > "$NEMO_DIR/.env" << ENVFILE
+export NVIDIA_API_KEY="${NVIDIA_API_KEY}"
+export NEMO_MODEL="${NEMO_MODEL}"
+ENVFILE
+)
+chmod 600 "$NEMO_DIR/.env"
+
 if [ "${INSTALL_MODE:-1}" = "1" ]; then
     # ═══ DOCKER INSTALL ═══
 
@@ -178,27 +187,32 @@ if [ "${INSTALL_MODE:-1}" = "1" ]; then
     else
         echo -e "  ${DIM}Downloading Nemo Code source...${RESET}"
         CLONE_DIR=$(mktemp -d)
-        git clone --depth 1 https://github.com/kevdogg102396-afk/nemo-code.git "$CLONE_DIR" 2>&1 | tail -1
+        git clone --depth 1 https://github.com/kevdogg102396-afk/free-claude-code.git "$CLONE_DIR" 2>&1 | tail -1
         cd "$CLONE_DIR"
     fi
     docker build -t nemo-code:latest . 2>&1 | grep -E "^(#|Successfully|DONE)" | tail -5
     echo -e "  ${GREEN}✓${RESET} Docker image ready"
 
-    # Docker launcher
-    cat > "$NEMO_DIR/nemo-code" << LAUNCHER
+    # Docker launcher — sources .env at runtime so the key isn't baked into
+    # this script (mode 700 still, defense in depth).
+    cat > "$NEMO_DIR/nemo-code" << 'LAUNCHER'
 #!/bin/bash
+NEMO_DIR="$HOME/.nemo-code"
+[ -f "$NEMO_DIR/.env" ] && source "$NEMO_DIR/.env"
 exec docker run -it --rm --dns 8.8.8.8 --dns 8.8.4.4 \
-    -e NVIDIA_API_KEY="${NVIDIA_API_KEY}" \
-    -e NEMO_MODEL="${NEMO_MODEL}" \
+    -e NVIDIA_API_KEY="$NVIDIA_API_KEY" \
+    -e NEMO_MODEL="$NEMO_MODEL" \
     nemo-code:latest \
-    "\${@:-chat}"
+    "${@:-chat}"
 LAUNCHER
-    chmod +x "$NEMO_DIR/nemo-code"
+    chmod 700 "$NEMO_DIR/nemo-code"
 
-    # Telegram launcher
-    cat > "$NEMO_DIR/nemo-telegram" << TGLAUNCHER
+    # Telegram launcher — also sources .env, same reasoning.
+    cat > "$NEMO_DIR/nemo-telegram" << 'TGLAUNCHER'
 #!/bin/bash
-if [ -z "\$TELEGRAM_BOT_TOKEN" ]; then
+NEMO_DIR="$HOME/.nemo-code"
+[ -f "$NEMO_DIR/.env" ] && source "$NEMO_DIR/.env"
+if [ -z "$TELEGRAM_BOT_TOKEN" ]; then
     echo "Usage: TELEGRAM_BOT_TOKEN=xxx nemo-telegram"
     echo "Create a bot: https://t.me/BotFather"
     exit 1
@@ -206,15 +220,15 @@ fi
 docker stop nemo-tg 2>/dev/null; docker rm nemo-tg 2>/dev/null
 exec docker run -it --name nemo-tg \
     --dns 8.8.8.8 --dns 8.8.4.4 \
-    -e NVIDIA_API_KEY="${NVIDIA_API_KEY}" \
-    -e NEMO_MODEL="${NEMO_MODEL}" \
-    -e TELEGRAM_BOT_TOKEN="\$TELEGRAM_BOT_TOKEN" \
-    -e TELEGRAM_ALLOWED_CHAT_IDS="\${TELEGRAM_ALLOWED_CHAT_IDS:-}" \
+    -e NVIDIA_API_KEY="$NVIDIA_API_KEY" \
+    -e NEMO_MODEL="$NEMO_MODEL" \
+    -e TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN" \
+    -e TELEGRAM_ALLOWED_CHAT_IDS="${TELEGRAM_ALLOWED_CHAT_IDS:-}" \
     -e ANTHROPIC_API_KEY="nemo-code-local" \
     -e ANTHROPIC_BASE_URL="http://127.0.0.1:4000" \
     nemo-code:latest telegram
 TGLAUNCHER
-    chmod +x "$NEMO_DIR/nemo-telegram"
+    chmod 700 "$NEMO_DIR/nemo-telegram"
 
 else
     # ═══ LOCAL INSTALL ═══
@@ -312,7 +326,11 @@ fi
 NEMO_MODEL="${NEMO_MODEL:-moonshotai/kimi-k2.5}"
 NEMO_MAX_TOKENS="${NEMO_MAX_TOKENS:-16384}"
 
-cat > /tmp/nemo-litellm.yaml << YAML
+# Write LiteLLM config into $NEMO_DIR (mode 600) rather than /tmp — prevents
+# other users on shared systems from reading the embedded NVIDIA_API_KEY.
+LITELLM_YAML="$NEMO_DIR/litellm.yaml"
+LITELLM_LOG="$NEMO_DIR/litellm.log"
+(umask 077 && cat > "$LITELLM_YAML" << YAML
 litellm_settings:
   drop_params: true
 model_list:
@@ -332,9 +350,21 @@ model_list:
       api_key: ${NVIDIA_API_KEY}
       max_tokens: ${NEMO_MAX_TOKENS}
 YAML
+)
+chmod 600 "$LITELLM_YAML"
 
-# Kill any existing LiteLLM on our port
-lsof -ti:4000 2>/dev/null | xargs kill 2>/dev/null
+# Only kill processes on port 4000 that look like litellm/python — don't stomp
+# on an unrelated dev server that happens to use the same port.
+for pid in $(lsof -ti:4000 2>/dev/null); do
+    comm=$(ps -p "$pid" -o comm= 2>/dev/null | tr -d '[:space:]')
+    case "$comm" in
+        litellm|python|python3|python.exe|python3.exe)
+            kill "$pid" 2>/dev/null ;;
+        *)
+            echo "Port 4000 is held by '$comm' (pid $pid) — not killing. Free the port and retry."
+            exit 1 ;;
+    esac
+done
 sleep 1
 
 # Find litellm — might not be on PATH (especially Windows)
@@ -381,7 +411,7 @@ if [ -z "$LITELLM_CMD" ]; then
     exit 1
 fi
 
-PYTHONIOENCODING=utf-8 PYTHONUTF8=1 "$LITELLM_CMD" --config /tmp/nemo-litellm.yaml --port 4000 --host 127.0.0.1 > /tmp/nemo-litellm.log 2>&1 &
+PYTHONIOENCODING=utf-8 PYTHONUTF8=1 "$LITELLM_CMD" --config "$LITELLM_YAML" --port 4000 --host 127.0.0.1 > "$LITELLM_LOG" 2>&1 &
 PROXY_PID=$!
 trap "kill $PROXY_PID 2>/dev/null" EXIT
 
@@ -396,7 +426,7 @@ for i in $(seq 1 30); do
 done
 
 if [ "$PROXY_READY" = false ]; then
-    echo "LiteLLM proxy failed to start. Check /tmp/nemo-litellm.log"
+    echo "LiteLLM proxy failed to start. Check $LITELLM_LOG"
     exit 1
 fi
 
@@ -434,7 +464,7 @@ Say: "I'm 100% free. All 3 models run through NVIDIA's free API tier. No subscri
 ## Key Facts
 - **Cost**: $0. Free. Always. All models.
 - **Made by**: ClawdWorks (Kevin Cline + Claude)
-- **Open source**: github.com/kevdogg102396-afk/nemo-code
+- **Open source**: github.com/kevdogg102396-afk/free-claude-code
 - **Framework**: Claude Code CLI (Apache 2.0)
 
 ## Rules
@@ -466,9 +496,7 @@ $CLAUDE_CMD --model sonnet --system-prompt-file "$NEMO_DIR/CLAUDE.md" "$@"
 LOCALLAUNCHER
     chmod +x "$NEMO_DIR/nemo-code"
 
-    # Save env
-    echo "export NVIDIA_API_KEY=\"${NVIDIA_API_KEY}\"" > "$NEMO_DIR/.env"
-    echo "export NEMO_MODEL=\"${NEMO_MODEL}\"" >> "$NEMO_DIR/.env"
+    # (.env was written earlier, before the install-mode branch, with mode 600)
 
     # Copy PowerShell launcher for Windows users
     SCRIPT_DIR_PS="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"

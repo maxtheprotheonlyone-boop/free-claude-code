@@ -7,7 +7,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawn } = require('child_process');
+const { execFileSync, spawn } = require('child_process');
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ALLOWED_CHAT_IDS = (process.env.TELEGRAM_ALLOWED_CHAT_IDS || '').split(',').map(s => s.trim());
@@ -123,16 +123,26 @@ function startTypingLoop(chatId) {
 function runClaude(prompt) {
   return new Promise((resolve) => {
     try {
-      // Escape for shell
-      const escaped = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-      const result = execSync(
-        `claude -p "${escaped}" --model ${currentModel} --dangerously-skip-permissions --bare --system-prompt-file /workspace/CLAUDE.md --add-dir /workspace --mcp-config /workspace/.mcp.json --output-format text`,
+      // execFileSync bypasses the shell — args go straight to argv, so no
+      // escaping is needed and a Telegram message can't break out of quotes.
+      const result = execFileSync(
+        'claude',
+        [
+          '-p', prompt,
+          '--model', currentModel,
+          '--dangerously-skip-permissions',
+          '--bare',
+          '--system-prompt-file', '/workspace/CLAUDE.md',
+          '--add-dir', '/workspace',
+          '--mcp-config', '/workspace/.mcp.json',
+          '--output-format', 'text',
+        ],
         {
           encoding: 'utf-8',
           timeout: 0, // no timeout — let Nemo cook
           env: { ...process.env },
           cwd: '/workspace',
-          maxBuffer: 1024 * 1024
+          maxBuffer: 1024 * 1024,
         }
       );
       resolve(result.trim());
